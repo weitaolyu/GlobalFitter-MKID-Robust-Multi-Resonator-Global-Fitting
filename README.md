@@ -17,3 +17,7 @@ Compared to conventional independent circle fitting, this global approach:
 1. Breaks the mathematical degeneracy between the global electrical delay, constant phase offset, and local asymmetry ($\phi$).
 2. Eliminates non-physical $Q_i$ and $Q_c$ scatter induced by local measurement artifacts (e.g., cavity absorption peaks).
 3. Requires zero manual tuning of threshold windows, enabling a fully automated characterization pipeline.
+
+## 📖 Citation
+If you use this code in your research, please consider citing our accompanying paper submitted to *Superconductor Science and Technology (SUST)*:
+> *(Update this section with your paper's arXiv link or DOI once published)*
