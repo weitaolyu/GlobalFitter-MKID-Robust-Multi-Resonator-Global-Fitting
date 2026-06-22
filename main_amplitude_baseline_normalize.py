@@ -134,66 +134,179 @@ def amplitude_baseline_normalize(
     phase_unwrapped_after = np.unwrap(np.angle(signal_normalized))
 
     if plot:
-        # Set Plot Style
+        # =============================
+        # Global style
+        # =============================
         matplotlib.rcParams.update(matplotlib.rcParamsDefault)
-        try:
-            plt.rcParams['font.family'] = 'serif'
-            plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'Liberation Serif']
-        except: pass
-        plt.rcParams['mathtext.fontset'] = 'stix'
-        plt.rcParams['axes.unicode_minus'] = False
-        
-        # Create figure
-        fig = plt.figure(figsize=(7, 10), dpi=150)
-        gs = fig.add_gridspec(3, 1, height_ratios=[1.2, 1.2, 1.5])
-        
-        # 1. Amplitude
+    
+        plt.rcParams.update({
+            "font.family": "serif",
+            "font.serif": ["Times New Roman", "DejaVu Serif", "Liberation Serif"],
+            "mathtext.fontset": "stix",
+            "axes.unicode_minus": False,
+    
+            # font size
+            "font.size": 12,
+            "axes.labelsize": 12,
+            "axes.titlesize": 12,
+            "xtick.labelsize": 11,
+            "ytick.labelsize": 11,
+            "legend.fontsize": 7,
+    
+            # line / axis style
+            "axes.linewidth": 1,
+            "lines.linewidth": 1.5,
+            "grid.linewidth": 0.6,
+            "grid.alpha": 0.25,
+    
+            # save
+            "savefig.bbox": "tight",
+            "savefig.pad_inches": 0.03
+        })
+    
+        # =============================
+        # Colors
+        # =============================
+        c_raw = "#0000FF"        # blue
+        c_baseline = "#FFA500"   # orange
+        c_corr = "#008000"       # green
+        c_raw_iq = "#0000FF"
+        c_corr_iq = "#008000"
+        c_circle = "#4D4D4D"
+    
+        # =============================
+        # Data
+        # =============================
+        x_ghz = frequency_sorted / 1e9
+    
+        # Panel (a): still in dB
+        corrected_db = 20 * np.log10(np.abs(signal_normalized) + EPS_DEFAULT)
+        corrected_db_neg = -corrected_db   # for visual separation only
+    
+        # Panel (c)
+        raw_iq = signal_sorted
+        corr_iq = signal_normalized
+    
+        # =============================
+        # Figure layout
+        # =============================
+        fig = plt.figure(figsize=(7.2, 8.4), dpi=600, constrained_layout=True)
+        gs = fig.add_gridspec(3, 1, height_ratios=[1.0, 1.0, 1.15], hspace=0.10)
+    
         ax1 = fig.add_subplot(gs[0])
-        ax1.plot(frequency_sorted / 1e9, magnitude_db, 'b-', lw=1.5, alpha=0.6, label='Raw')
-        ax1.plot(frequency_sorted / 1e9, baseline_db, 'orange', lw=1.5, ls='--', label='Baseline (ASLS)')
-        ax1.plot(frequency_sorted / 1e9, 20*np.log10(np.abs(signal_normalized) + EPS_DEFAULT), 
-                'g-', lw=1.0, label='Corrected')
-        ax1.set_ylabel('Magnitude (dB)'); ax1.legend(loc='lower right', fontsize=8)
-        ax1.set_title('(a) Amplitude Baseline Removal')
-        ax1.grid(True, alpha=0.3)
-        
-        # 2. Phase
-        ax2 = fig.add_subplot(gs[1])
-        ax2.plot(frequency_sorted / 1e9, phase_unwrapped, 'b-', lw=1.5, alpha=0.6, label='Raw Unwrapped')
-        ax2.plot(frequency_sorted / 1e9, baseline_phase, 'orange', lw=1.5, ls='--', label='Baseline (ASLS)')
-        ax2.plot(frequency_sorted / 1e9, phase_unwrapped_after, 'g-', lw=1.0, label='Corrected')
-        ax2.set_ylabel('Phase (rad)'); ax2.legend(loc='lower right', fontsize=8)
-        ax2.set_title('(b) Phase Baseline Removal')
-        ax2.grid(True, alpha=0.3)
-        
-        # 3. IQ Plane
+        ax2 = fig.add_subplot(gs[1], sharex=ax1)
         ax3 = fig.add_subplot(gs[2])
-        # Downsample for IQ plot to avoid clutter
-        step = max(1, len(signal_sorted)//2000)
-        ax3.plot(signal_normalized.real[::step], signal_normalized.imag[::step], 
-                'm.', ms=2, alpha=0.5, label='Corrected Data')
-        # Add unit circle
-        theta = np.linspace(0, 2*np.pi, 100)
-        ax3.plot(np.cos(theta), np.sin(theta), 'k--', lw=0.8, alpha=0.5)
-        
-        ax3.axis('equal')
-        ax3.set_xlabel('I'); ax3.set_ylabel('Q')
-        ax3.set_title('(c) IQ Plane (After Correction)')
-        ax3.legend(loc='upper right', fontsize=8)
-        ax3.grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        
+    
+        # =============================
+        # Helper
+        # =============================
+        def beautify_axis(ax):
+            # Keep four-side frame
+            for spine in ax.spines.values():
+                spine.set_visible(True)
+                spine.set_linewidth(0.9)
+    
+            ax.grid(True, which="major", alpha=0.25)
+    
+            # Remove minor ticks
+            ax.minorticks_off()
+    
+            ax.tick_params(direction="in", which="major", top=True, right=True,
+                           length=4, width=0.8)
+    
+        # =============================
+        # (a) Amplitude in dB
+        # =============================
+        ax1.plot(x_ghz, magnitude_db,
+                 color=c_raw, lw=2, alpha=0.80, label=r"Raw $|S_{21}|$")
+        ax1.plot(x_ghz, baseline_db,
+                 color=c_baseline, lw=2, ls=(0, (5, 2)), label="Baseline (ASLS)")
+        ax1.plot(x_ghz, corrected_db_neg,
+                 color=c_corr, lw=2.5, label=r"Corrected (shown as $-|S_{21}|$ in dB)")
+    
+        # zero line for reference
+        ax1.axhline(0, color="0.4", lw=0.8, ls="--", alpha=0.6)
+    
+        ax1.set_ylabel(r"$|S_{21}|$ (dB)")
+        ax1.set_title("(a) Amplitude Baseline Removal", pad=6)
+        ax1.legend(loc="best", frameon=True, edgecolor="0.85", fancybox=False)
+        beautify_axis(ax1)
+    
+        # =============================
+        # (b) Phase
+        # =============================
+        ax2.plot(x_ghz, phase_unwrapped,
+                 color=c_raw, lw=2, alpha=0.80, label="Raw unwrapped")
+        ax2.plot(x_ghz, baseline_phase,
+                 color=c_baseline, lw=2, ls=(0, (5, 2)), label="Baseline (ASLS)")
+        ax2.plot(x_ghz, phase_unwrapped_after,
+                 color=c_corr, lw=2.5, label="Corrected")
+    
+        ax2.set_ylabel("Phase (rad)")
+        ax2.set_xlabel("Frequency (GHz)")
+        ax2.set_title("(b) Phase Baseline Removal", pad=6)
+        ax2.legend(loc="best", frameon=True, edgecolor="0.85", fancybox=False)
+        beautify_axis(ax2)
+    
+        # Hide x tick labels for the first panel
+        plt.setp(ax1.get_xticklabels(), visible=False)
+    
+        # =============================
+        # (c) IQ plane: Raw vs Corrected
+        # =============================
+        step = max(1, len(signal_sorted) // 1800)
+    
+        ax3.plot(raw_iq.real[::step], raw_iq.imag[::step],
+                 linestyle="None",
+                 marker="o",
+                 ms=3,
+                 mec="none",
+                 color=c_raw_iq,
+                 alpha=0.4,
+                 label="Raw")
+    
+        ax3.plot(corr_iq.real[::step], corr_iq.imag[::step],
+                 linestyle="None",
+                 marker="*",
+                 ms=5,
+                 mec="none",
+                 color=c_corr_iq,
+                 alpha=0.6,
+                 label="Corrected")
+    
+        # Unit circle
+        theta = np.linspace(0, 2*np.pi, 400)
+        ax3.plot(np.cos(theta), np.sin(theta),
+                 color=c_circle, lw=1.0, ls=(0, (4, 2)), alpha=0.75, label="Unit circle")
+    
+        ax3.set_aspect("equal", adjustable="box")
+        ax3.set_xlabel(r"Re($S_{21}$)")
+        ax3.set_ylabel(r"Im($S_{21}$)")
+        ax3.set_title("(c) IQ Plane: Raw vs Corrected", pad=6)
+        ax3.legend(loc="best", frameon=True, edgecolor="0.85", fancybox=False)
+        beautify_axis(ax3)
+    
+        # Symmetric axis limits
+        iq_r = np.r_[raw_iq.real[::step], corr_iq.real[::step]]
+        iq_i = np.r_[raw_iq.imag[::step], corr_iq.imag[::step]]
+        lim = 1.08 * max(np.max(np.abs(iq_r)), np.max(np.abs(iq_i)), 1.0)
+        ax3.set_xlim(-lim, lim)
+        ax3.set_ylim(-lim, lim)
+    
+        # =============================
         # Save
+        # =============================
         save_dir = os.path.join(os.path.expanduser("~"), "Downloads")
         if os.path.exists(save_dir):
             t_str = datetime.now().strftime("%Y%m%d_%H%M%S")
             f_path = os.path.join(save_dir, f"baseline_check_{t_str}.png")
             try:
-                fig.savefig(f_path, dpi=300)
+                fig.savefig(f_path, dpi=900)
                 print(f"Baseline plot saved to: {f_path}")
-            except: pass
-            
+            except Exception as e:
+                print(f"Failed to save figure: {e}")
+    
         plt.show()
+
 
     return frequency_sorted, signal_normalized, baseline_amplitude, baseline_db, baseline_phase
