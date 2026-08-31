@@ -236,7 +236,7 @@ Global outputs:
 
 Typical runtime:
 
-- ~1–10 seconds (with downsampling)
+- ~10–100 seconds (with downsampling)
 
 ---
 
@@ -244,7 +244,7 @@ Typical runtime:
 
 If you use this code in your research, please cite:
 
-(Add your SUST paper DOI or arXiv link here)
+(doi:10.1088/1361-6668/ae9f9b)
 
 ---
 
