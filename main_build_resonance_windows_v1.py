@@ -284,12 +284,11 @@ def build_resonance_windows(
         plt.tight_layout()
 
         # Auto-save
-        save_dir = os.path.join(os.path.expanduser("~"), "Downloads")
-        if os.path.exists(save_dir):
-            t_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-            save_path = os.path.join(save_dir, f"resolved_windows_{t_str}.png")
-            fig.savefig(save_path)
-            print(f"Window plot saved to: {save_path}")
+        save_dir = os.getcwd()
+        t_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        save_path = os.path.join(save_dir, f"resolved_windows_{t_str}.png")
+        fig.savefig(save_path)
+        print(f"Window plot saved to: {save_path}")
 
         plt.show()
 

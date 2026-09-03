@@ -251,3 +251,84 @@ If you use this code in your research, please cite:
 ## ✅ Summary
 
 **GlobalFitter-MKID (Ultimate Edition)** is a robust, physically constrained, and numerically stable global fitting framework featuring a **soft-shared Qi model**, designed to reliably extract resonator parameters from real-world MKID measurements where traditional methods fail.
+
+## Installation
+
+From the repository root, install the runtime dependencies with:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Python 3.9 or newer is recommended. The fitting implementation and its default
+parameters are unchanged by the installation cleanup.
+
+## Running the fitting scripts
+
+`main_test_experiment_data_v7.py` is the recommended entry point for
+experimental data:
+
+```bash
+python main_test_experiment_data_v7.py path/to/measurement.s2p
+python main_test_experiment_data_v7.py path/to/measurement.s2p --no-plot
+```
+
+`main_test_simulation_data_v7.py` is intended for the included or other
+simulation data:
+
+```bash
+python main_test_simulation_data_v7.py S21_simulation.txt
+python main_test_simulation_data_v7.py S21_simulation.txt --no-plot
+```
+
+To generate a simulation input file, run:
+
+```bash
+python generate_simulation_data.py
+```
+
+The generated `S21_simulation.txt` is written to the current working
+directory. Diagnostic figures are saved next to the generator script. The
+simulation fitting command saves its default plot as `global.png` next to the
+input file (and displays it unless `--no-plot` is used). Experimental fitting
+saves `global_robust_fit.png` in the current working directory when plotting is
+enabled, and writes a timestamped
+`fit_results_YYYYMMDD_HHMMSS.csv` next to the input file. The CSV contains the
+per-resonator fields `Index`, `Freq_GHz`, `Ql`, `Qi`, `Qc`, `Phi`, `k`, and
+`dlogQi`.
+
+## Input data format
+
+Touchstone `.s2p` files are read with `scikit-rf`; the fitter uses the complex
+`S21` parameter (port 2 measured from port 1). Plain text files must contain at
+least two whitespace-separated columns: frequency in Hz followed by complex
+S21. Comment lines may start with `#`. For example:
+
+```text
+# Frequency(Hz) S21_complex
+5.000000000000e+09 9.500000000000e-01+1.200000000000e-02j
+5.000100000000e+09 9.490000000000e-01+1.250000000000e-02j
+```
+
+## Project files
+
+- `main_test_experiment_data_v7.py` — recommended experimental-data entry point.
+- `main_test_simulation_data_v7.py` — simulation-data fitting entry point.
+- `generate_simulation_data.py` — simulation data generator.
+- `main_data_reader.py` — `.s2p` and text S21 readers.
+- `main_single_resonator_v1.py` — local single-resonator fitting.
+- `main_circle_fit.py`, `main_phase_fit.py` — fitting helper modules.
+
+## Current limitations and notes
+
+Peak prominence, height, minimum-Q, distance, and window parameters may need
+to be adjusted for a particular dataset. The shipped default values are
+preserved; change them only when the data requires it. Plotting is enabled by
+default for interactive use, while `--no-plot` supports headless or batch
+execution.
+
+## License
+
+This project is released under the [MIT License](LICENSE). No core fitting
+formula, algorithm, default analysis flow, or output-field meaning was changed
+as part of the cross-platform release cleanup.

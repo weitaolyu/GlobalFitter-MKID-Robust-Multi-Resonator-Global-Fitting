@@ -591,8 +591,7 @@ def hierarchical_fit_s21_notch_multi(
     }
 
     if plot_result:
-        
-        plot_fit_results(f_sort, S, output, save_path= r'C:\Users\NEVER\Desktop\HK\ROGer\usual code\S21fitting\20260423\global.png')
+        plot_fit_results(f_sort, S, output, save_path=save_path)
 
     return output
 
@@ -742,6 +741,8 @@ def plot_fit_results(f, S, result, save_path=None):
     )
 
     if save_path:
+        save_dir = os.path.dirname(os.path.abspath(save_path))
+        os.makedirs(save_dir, exist_ok=True)
         fig.savefig(save_path, dpi=900, bbox_inches='tight')
 
     plt.show()
@@ -775,7 +776,10 @@ def main():
             params=fit_params,
             enable_downsample=CFG_DOWNSAMPLE,
             plot_result=do_plot,
-            save_path= r'C:\Users\NEVER\Desktop\HK\ROGer\usual code\S21fitting\20260423\global.png'
+            save_path=os.path.join(
+                os.path.dirname(os.path.abspath(args.file_path)),
+                'global.png'
+            ) if do_plot else None
         )
 
         print("\n=== Final Results ===")

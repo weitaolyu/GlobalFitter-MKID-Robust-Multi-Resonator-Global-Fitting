@@ -301,7 +301,7 @@ if __name__ == '__main__':
     plot_S21(f, S21_noisy, resonators)
     plot_delay_and_complex(f, S21_noisy, resonators)
     
-    file_path = r'C:\Users\NEVER\Desktop\HK\ROGer\usual code\S21fitting\20260423\S21_simulation.txt'
+    file_path = os.path.join(os.getcwd(), 'S21_simulation.txt')
 
     # 如果你想保存加噪数据，就把 S21 改成 S21_noisy
     S21_to_save = S21_noisy   # 或者 S21
