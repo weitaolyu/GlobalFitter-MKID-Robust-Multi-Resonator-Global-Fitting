@@ -1,3 +1,6 @@
+# Direct runtime dependencies used by the repository's Python files.
+# Standard-library modules such as os, sys, argparse, datetime, typing, and re
+# do not need to be installed separately.
 numpy
 scipy
 matplotlib
