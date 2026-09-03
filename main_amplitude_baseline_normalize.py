@@ -296,15 +296,14 @@ def amplitude_baseline_normalize(
         # =============================
         # Save
         # =============================
-        save_dir = os.path.join(os.path.expanduser("~"), "Downloads")
-        if os.path.exists(save_dir):
-            t_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-            f_path = os.path.join(save_dir, f"baseline_check_{t_str}.png")
-            try:
-                fig.savefig(f_path, dpi=900)
-                print(f"Baseline plot saved to: {f_path}")
-            except Exception as e:
-                print(f"Failed to save figure: {e}")
+        save_dir = os.getcwd()
+        t_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        f_path = os.path.join(save_dir, f"baseline_check_{t_str}.png")
+        try:
+            fig.savefig(f_path, dpi=900)
+            print(f"Baseline plot saved to: {f_path}")
+        except Exception as e:
+            print(f"Failed to save figure: {e}")
     
         plt.show()
 

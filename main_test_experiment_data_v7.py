@@ -921,6 +921,8 @@ def plot_fit_results(f: np.ndarray, S: np.ndarray, result: Dict, save_path: Opti
     )
 
     if save_path:
+        save_dir = os.path.dirname(os.path.abspath(save_path))
+        os.makedirs(save_dir, exist_ok=True)
         fig.savefig(save_path, dpi=600, bbox_inches='tight')
 
     plt.show()

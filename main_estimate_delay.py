@@ -93,7 +93,7 @@ def estimate_tau_robust(f: np.ndarray, S: np.ndarray, plot: bool = False) -> flo
         plt.tight_layout()
         
         # Save figure
-        save_path = r"C:\Users\NEVER\Downloads"  # Modify this path as needed
+        save_path = os.getcwd()
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"tau_fit_{timestamp}.png"
         full_path = os.path.join(save_path, filename)

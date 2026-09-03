@@ -16,8 +16,11 @@ from scipy.interpolate import interp1d
 try:
     from main_circle_fit import circle_fit_pratt
     from main_phase_fit import phase_fit
-except ImportError:
-    print("Warning: circle_fit or phase_fit not found. Ensure they are importable.")
+except ImportError as exc:
+    raise ImportError(
+        "Unable to import local fitting modules. "
+        "Please run the script from the repository root."
+    ) from exc
 
 # Constants
 PI_2 = 2.0 * np.pi
@@ -207,7 +210,7 @@ def fit_single_notch_local(
     f: np.ndarray,
     S_flat: np.ndarray,
     plot: bool = False,
-    # save_path: Optional[str] = r'C:\Users\NEVER\Downloads\single',
+    # save_path: Optional[str] = None,
     save_path: Optional[str] = None,
     dpi: int = 900,
     figsize: tuple = (8, 6),
